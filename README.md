@@ -7,3 +7,4 @@ This repo contains content materials for an Async Await Brown Bag Session. It go
 1. Callbacks
 1. Promises
 1. Async Await
+1. Exercises
