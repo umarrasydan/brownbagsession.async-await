@@ -25,7 +25,7 @@ console.log(result); // undefined
 As a convention, the JS community came up with the concept of callback. We pass a function that will be called once the async function finished executing.
 
 ```javascript
-function handleMultiplyResult(err, cb) {
+function handleMultiplyResult(err, result) {
     console.log(result); // 2
 }
 

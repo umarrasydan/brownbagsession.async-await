@@ -2,7 +2,7 @@
 
 ## Asynchronous/Async function
 
-In our previous example, if the `asyncMultiply` returns a promise, we'll get a `Promise` with a pending status. Note that once a promise is created it's immediately executed. Promise can be passed around like any ada data value.
+If the `asyncMultiply` returns a promise, we'll get a `Promise` with a pending status. Note that **once a promise is created it's immediately executed**. Promise can be passed around like any other data value.
 
 ```javascript
 const result = asyncMultiply(1, 2);
@@ -38,7 +38,7 @@ const promise = new Promise((resolve, reject) => {
 promise.then(value => console.log(value)).catch(err => console.log(err));
 ```
 
-For usually testing purposes, you can also simply create a promise that immediately `resolve` or `reject`. Consider these shortcut methods to creating a dummy promise.
+For testing purposes usually, you can also create a promise that only `resolve` or `reject`. Consider these shortcut methods to creating a dummy promise.
 
 ```javascript
 const promise = Promise.resolve('hello');
@@ -107,12 +107,24 @@ Promise.race([asyncMultiply(1, 2), delay(500).then(() => 'I win!')]).then(
 
 ## Error Handling
 
-Error handling is straightforward with `catch`. If you don't catch the errors, they will silently fail.
+Error handling is straightforward with `catch`. **Note if you don't catch the errors, they will silently fail**.
 
 ```javascript
-const errorPromise = Promise.reject(new Error('hello from error'));
+const errorPromise = Promise.reject(new Error('Catch me if you can'));
 
 errorPromise
     .then(result => console.log(result))
     .catch(err => console.log(err.message));
 ```
+
+## Loop
+
+If you try to do something like this, you're getting yourself in trouble.
+
+```javascript
+for (let i = 0; i < 10; i++) {
+    asyncMultiply(i, 2).then(result => console.log('loop', result));
+}
+```
+
+It's not good to loop through async calls, but if you **really** need to do it, use async/await 😃

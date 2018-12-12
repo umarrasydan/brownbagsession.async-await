@@ -2,14 +2,14 @@
 
 ## Async
 
-On to the main event! This is actually a syntactic sugar on top of promises with special properties [read more](https://mathiasbynens.be/notes/async-stack-traces). What this means is that any promise can be `await`-ed. Before we look at that, let's look at the first part of the equation. `async`. When an async function returns a non-promise, it automatically convert the returned value as a promise.
+On to the main event! This is actually a syntactic sugar on top of promises with special properties [read more](https://mathiasbynens.be/notes/async-stack-traces). Any promise can be `await`-ed. Before we look at that, let's look at the first part of the equation, `async`. When an async function returns a non-promise, it automatically converts the returned value as a promise.
 
 ```javascript
 async function multiply(a, b) {
     return a * b;
 }
 
-multiply(1, 2); // Promise { 2 }
+multiply(1, 2); // Promise { resolved }
 
 // They roughly work like this under the hood
 
@@ -17,12 +17,12 @@ function multiply(a, b) {
     return Promise.resolve(a * b);
 }
 
-multiply(1, 2); // Promise { 2 }
+multiply(1, 2); // Promise { resolved }
 ```
 
 ## Await
 
-`await` is a syntactic sugar to `.then`. This means that any promise can be `await`-ed with 1 rule, they need to be inside an `async` function. To get around this, when we want to execute async code, we usually wrap them in an anonymous function that's immediately called.
+`await` is a syntactic sugar to `.then`. This means that any promise can be `await`-ed with 1 rule, they need to be inside an `async` function. To get around this when we want to execute async code, we usually wrap them in an anonymous function that's immediately called.
 
 ```javascript
 (async () => {
@@ -37,7 +37,7 @@ multiply(1, 2); // Promise { 2 }
 
 // OR
 
-const main = async function() {
+const main = async () => {
     await asyncMultiply(1, 2);
 };
 
@@ -59,6 +59,12 @@ function double(x) {
     return asyncMultiply(x, 2);
 }
 
+// OR
+
+async function double(x) {
+    return asyncMultiply(x, 2);
+}
+
 // don't do this read more here https://eslint.org/docs/rules/no-return-await
 
 async function double(x) {
@@ -68,15 +74,15 @@ async function double(x) {
 
 ## Sequential Async Calls
 
-Using async await writing sequential calls is more readable.
+Using async await, writing sequential calls is more readable
 
 ```javascript
 await asyncMultiply(1, 2);
 console.log('I will log between these 2 as expected');
 await asyncMultiply(2, 2);
 
-const firstResult = await asyncMultiply(1, 2);
-await asyncMultiply(firstResult, 2);
+const firstMultiply = await asyncMultiply(1, 2);
+const secondMultiply = await asyncMultiply(firstMultiply, secondMultiply);
 ```
 
 ## Parallel Async Calls
@@ -88,6 +94,16 @@ const [value1, value2] = await Promise.all([
     asyncMultiply(1, 2),
     asyncMultiply(2, 2)
 ]);
+
+// OR
+
+const multiplyResult = await Promise.all([
+    asyncMultiply(1, 2),
+    asyncMultiply(2, 2)
+]);
+
+const value1 = multiplyResult[0];
+const value2 = multiplyResult[1];
 ```
 
 ## Race
@@ -105,17 +121,20 @@ console.log('race', result);
 
 ## Loops
 
-When you need to do an await call inside a loop, generally it is not recommended [no-await-in-loop](https://eslint.org/docs/rules/no-await-in-loop). What you should do instead is loop through all of them to generate a promise, and `Promise.all()` the array. If you still need to do this for any reason, here's how. Only these loops will properly do pause at each await as you would expect.
+When you need to do an await call inside a loop, generally it is not recommended [no-await-in-loop](https://eslint.org/docs/rules/no-await-in-loop). What you should do instead is loop through all of them to generate a promise, and `Promise.all()` the array. If you still need to do this for any reason, here's how. Only these loop types will properly pause at each await as you would expect.
 
 ```javascript
+// for loop
 for (let i = 0; i < 5; i++) {
     await asyncMultiply(1, 2);
 }
 
+// for of loop
 for (let i of Array(5)) {
     await asyncMultiply(1, 2);
 }
 
+// for in loop
 for (let i in { 1: '', 2: '', 3: '', 4: '', 5: '' }) {
     await asyncMultiply(1, 2);
 }
@@ -129,10 +148,11 @@ await Promise.all(multiplyPromises); // [ 2, 4, 6, 8, 10 ]
 
 ## Error Handling
 
-Error handling is straightforward with async await, when we `await` a promise and it's rejected, the await will throw. and the way we handle that is by using try catch
+Error handling is straightforward with async await, when we `await` a promise and it's rejected, the `await` will throw. and the way we handle that is by using try catch
 
 ```javascript
 const errorPromise = Promise.reject(new Error('hello from error'));
+
 try {
     await errorPromise;
 } catch (e) {
