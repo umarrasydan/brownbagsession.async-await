@@ -2,7 +2,9 @@
 
 Time to test your understanding. Not a competition, so if you don't get it, raise your hand and we'll help you.
 
-> Tell me and I forget. Teach me and I remember. Involve me and I learn. Benjamin Franklin
+> Tell me and I forget. Teach me and I remember. Involve me and I learn.
+
+Benjamin Franklin
 
 ## 1. Who's first?
 
