@@ -57,7 +57,7 @@ function oddOrEven(number) {
 module.exports = oddOrEven;
 ```
 
-## 4. Convert them callbacks manually
+## 4. Convert them callbacks to promises manually
 
 Modify the code below to
 
@@ -75,7 +75,7 @@ fs.readFile('test.txt', 'utf8', (error, data) => {
 });
 ```
 
-## 4. Convert them callbacks with promisify
+## 4. Convert them callbacks to promises with promisify
 
 Modify the code below to
 
